@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+package prototok;
+
+message Token {
+  uint32 exp = 1;
+  uint32 nbf = 2;
+  uint32 iat = 3;
+  string jti = 4;
+  google.protobuf.Any payload = 5;
+}
