@@ -1,36 +1,42 @@
 require 'digest/sha2'
+require 'tempfile'
+
 module Prototok
   module Utils
     module Protoc
       class << self
         def cache
-          @cache ||= []
+          @cache ||= Set.new
         end
 
-        def process path
+        def process(path)
           path = File.expand_path path
           if !path || !File.exist?(path)
-            raise ArgumentError, "protobuf proto file is missing"
+            raise ArgumentError, 'protobuf proto file is missing'
           end
           input = File.read(path)
           digest = Digest::SHA256.hexdigest(input)
-          unless cache.include? digest
-            temp = Tempfile.new digest
+          if cache.include? digest # not threadsafe!
+            false
+          else
+            temp = ::Tempfile.new digest
             temp.write input
             temp.rewind
-            dirname = File.dirname(temp)
-            output_rb = temp.path + '_pb.rb'
-            begin
-              exec_cmd = "protoc #{temp.path} --ruby_out=#{dirname} --proto_path=#{dirname}"
-              `#{exec_cmd}`
-              puts "#{exec_cmd}"
-              load output_rb
-            ensure
-              cache << digest
-              FileUtils.rm output_rb
-            end
-          else
-            false
+            load_proto temp, digest
+          end
+        end
+
+        private
+
+        def load_proto(proto, digest)
+          dirname = File.dirname(proto.path)
+          output_rb = proto.path + '_pb.rb'
+          begin
+            `protoc #{proto.path} --ruby_out=#{dirname} --proto_path=#{dirname}`
+            load output_rb
+          ensure
+            cache.add digest
+            FileUtils.rm output_rb
           end
         end
       end

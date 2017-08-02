@@ -1,0 +1,14 @@
+require: rubocop-rspec
+AllCops:
+  RSpec:
+    Patterns:
+    - 'spec/meander/.+.rb$'
+    - 'spec/shared/.+.rb$'
+Metrics/MethodLength:
+  Max: 15
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+    - '*.gemspec'
+RSpec/ExampleLength:
+  Max: 10

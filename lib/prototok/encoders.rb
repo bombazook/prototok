@@ -25,10 +25,10 @@ module Prototok
         @options ||= Prototok.config[:encoder_options].dup
       end
 
-      def initialize payload=nil, header: nil, encoder_options: nil, **_
-        options.merge!(encoder_options) if !encoder_options.nil?
+      def initialize(payload = nil, header: nil, encoder_options: nil, **_)
+        options.merge!(encoder_options) unless encoder_options.nil?
         self[:payload] = payload
-        header.each{|k,v| self.send "#{k}=",v} unless header.nil?
+        header.each { |k, v| send "#{k}=", v } unless header.nil?
       end
 
       CLAIM_ALIASES.flat_map do |original, aliases|

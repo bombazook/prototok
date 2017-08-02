@@ -10,5 +10,12 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+    c.on_potential_false_positives = :raise
   end
+
+  config.mock_with :rspec do |mocks|
+    mocks.verify_doubled_constant_names = true
+    mocks.verify_partial_doubles = true
+  end
+
 end

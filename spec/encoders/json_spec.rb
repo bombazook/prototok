@@ -1,8 +1,7 @@
-require 'multi_json'
+require 'spec_helper'
 
-module Prototok
-  module Encoders
-    class Json < Base
+=begin
+ class Json < Base
       def encode
         MultiJson.encode to_h
       end
@@ -13,5 +12,12 @@ module Prototok
         obj
       end
     end
+=end
+
+RSpec.describe Prototok::Encoders::Json do
+  describe '#encode' do
+  end
+
+  describe '.decode' do
   end
 end

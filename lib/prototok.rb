@@ -16,7 +16,7 @@ module Prototok
       end
       encoded = payload.encode
       processed = cipher(**opts).new(*cipher_args).encode(encoded)
-      formatter(opts[:formatter]).new.encode(processed)
+      formatter(opts[:formatter]).new.encode(*processed)
     end
 
     def decode(encoded, *cipher_args, **opts)
@@ -25,31 +25,31 @@ module Prototok
       encoder(opts[:encoder]).decode(unprocessed, **opts)
     end
 
-    def key *args, **opts
+    def key(*args, **opts)
       cipher(**opts).key(*args)
     end
 
     private
 
-    def encoder(encoder_name = config[:encoder])
+    def err(error_class, message_name)
+      raise(error_class, Errors::MESSAGES[message_name])
+    end
+
+    def encoder(encoder_name = nil)
       encoder_name ||= config[:encoder]
-      error_msg = 'No such encoder declared'.freeze
-      Prototok::Encoders.find(encoder_name) || raise(ArgumentError, error_msg)
+      Prototok::Encoders.find(encoder_name) || err(ArgumentError, :encoder)
     end
 
     def cipher(**opts)
       op = opts[:op] || config[:op]
       version = opts[:version] || config[:version]
       ver_name = "V#{version}"
-      error_msg = 'No such cipher declared'.freeze
-      Prototok::Ciphers.find(ver_name, op) || raise(ArgumentError, error_msg)
+      Prototok::Ciphers.find(ver_name, op) || err(ArgumentError, :cipher)
     end
 
-    def formatter(formatter_name = config[:formatter])
-      formatter_name ||= config[:formatter]
-      error_msg = 'No such formatter declared'.freeze
-      Prototok::Formatters.find(formatter_name) ||
-        raise(ArgumentError, error_msg)
+    def formatter(frmter_name = nil)
+      frmter_name ||= config[:formatter]
+      Prototok::Formatters.find(frmter_name) || err(ArgumentError, :formatter)
     end
   end
 end

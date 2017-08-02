@@ -1,6 +1,6 @@
 module Prototok
   module Ciphers
-    Autoloaded.class{}
+    Autoloaded.class {}
     extend Utils::Listed
     class Base
       class << self

@@ -1,6 +1,6 @@
 module Prototok
   module Formatters
-    Autoloaded.class{}
+    Autoloaded.class {}
     extend Utils::Listed
     class Base; end
   end
