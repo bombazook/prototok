@@ -6,19 +6,21 @@ RSpec.describe Prototok do
 
   option_combinations.each do |combination_name, options|
     context combination_name do
-      describe '.encode' do
-        let(:private_key){ described_class.key(**options) }
-        let(:public_key){ described_class.key(private_key, **options) rescue nil }
-        let(:other_private_key){ described_class.key(**options) }
-        let(:other_public_key){ described_class.key(other_private_key, **options) rescue nil }
-        let(:keyword_args){ options }
-        let(:payload){ {:query => "some query"} }
-
-        if options[:op].to_s == 'encrypted_sign'
+      let(:private_key){ described_class.key(**options) }
+      let(:public_key){ described_class.key(private_key, **options) rescue nil }
+      let(:other_private_key){ described_class.key(**options) }
+      let(:other_public_key){ described_class.key(other_private_key, **options) rescue nil }
+      let(:keyword_args){ options }
+      let(:payload){ {:query => "some query"} }
+      if options[:op].to_s == 'encrypted_sign'
+        describe '.encode' do
           it 'gets private and remote public key without raising errors' do
             expect{described_class.encode payload, private_key, other_public_key, **options}.not_to raise_error
           end
-        else
+        end
+
+      else
+        describe '.encode' do
           it 'gets private key without raising error' do
             expect{described_class.encode payload, private_key, **options}.not_to raise_error
           end
