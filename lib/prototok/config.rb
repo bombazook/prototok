@@ -1,9 +1,9 @@
 module Prototok
   CONFIG_DEFAULTS = {
-    formatter: 'default',
+    formatter: :default,
     version: 1,
     op: :encrypted_mac,
-    encoder: 'json',
+    encoder: :json,
     token_delimiter: '.',
     encoder_options: {}
   }.freeze

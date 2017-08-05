@@ -25,7 +25,7 @@ module Prototok
           if private_key.nil?
             cipher_class::SigningKey.generate.to_bytes
           else
-            cipher_class::VerifyKey.new(private_key).to_bytes
+            cipher_class::SigningKey.new(private_key).verify_key.to_bytes
           end
         end
       end

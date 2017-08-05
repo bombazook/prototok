@@ -11,7 +11,7 @@ require 'prototok/formatters'
 module Prototok
   class << self
     def encode(payload, *cipher_args, **opts)
-      unless payload.is_a?(Prototok::Encoders::Base)
+      unless payload.kind_of?(Prototok::Encoders::Base)
         payload = encoder(opts[:encoder]).new(payload, **opts)
       end
       encoded = payload.encode

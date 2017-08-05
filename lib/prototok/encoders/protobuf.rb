@@ -14,22 +14,17 @@ module Prototok
 
       def encode
         payload_klass = self.class.payload_class(options)
-        payload = payload_klass.new(self.payload)
+        payload = payload_klass.new(self.payload || {})
         any = Google::Protobuf::Any.new
         any.pack payload
         token_attributes = to_h.reject { |_, v| v.nil? }.merge!(payload: any)
         token = Prototok::Token.new token_attributes
-        Prototok::Token.encode(token)
+        token.class.encode(token)
       end
 
-      def self.decode(blob, encoder_options: nil, **_)
-        if encoder_options.nil?
-          opts = options
-        else
-          opts = options.merge(encoder_options) # look init from encoders.rb
-        end
-        payload_klass = payload_class(opts)
-        obj = new
+      def self.decode(blob, **opts)
+        obj = new **opts
+        payload_klass = payload_class(obj.options)
         decoded_token = Prototok::Token.decode(blob)
         obj.each_pair { |k, _| obj[k] = decoded_token[k.to_s] }
         obj.payload = obj.payload.unpack(payload_klass)
