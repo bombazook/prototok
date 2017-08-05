@@ -4,31 +4,33 @@ require 'google/protobuf/well_known_types'
 module Prototok
   module Encoders
     class Protobuf < Base
-      # token proto initial load
       base_token = File.join(__dir__, 'protobuf/token.proto')
       Prototok::Utils::Protoc.process(base_token)
 
       PROTOBUF_DEFAULTS = {
-        payload_class: '::Prototok::Payload'
+        payload_class: '::Prototok::Protobuf::Payload'
       }.freeze
 
-      def encode
-        payload_klass = self.class.payload_class(options)
-        payload = payload_klass.new(self.payload || {})
-        any = Google::Protobuf::Any.new
-        any.pack payload
-        token_attributes = to_h.reject { |_, v| v.nil? }.merge!(payload: any)
-        token = Prototok::Token.new token_attributes
-        token.class.encode(token)
+      def encode_token payload, **header
+        token = build_token(payload, **header)
+        protobuf_token = Prototok::Protobuf::Token.new(prepare_token(token))
+        protobuf_token.class.encode(protobuf_token)
       end
 
-      def self.decode(blob, **opts)
-        obj = new **opts
-        payload_klass = payload_class(obj.options)
-        decoded_token = Prototok::Token.decode(blob)
-        obj.each_pair { |k, _| obj[k] = decoded_token[k.to_s] }
-        obj.payload = obj.payload.unpack(payload_klass)
-        obj
+      def decode_token str
+        decoded_token = Prototok::Protobuf::Token.decode(str)
+        token = Token.new(decoded_token.to_h)
+        token.payload = decoded_token.payload.unpack(payload_class)
+        token
+      end
+
+      def encode_payload payload
+        payload = payload_class.new(payload.to_h.reject { |_, v| v.nil? })
+        payload_class.encode(payload)
+      end
+
+      def decode_payload str
+        payload_class.decode(str)
       end
 
       def self.options
@@ -36,6 +38,18 @@ module Prototok
       end
 
       private
+
+      def prepare_token token
+        payload = payload_class.new(token.payload || {})
+        any = Google::Protobuf::Any.new
+        any.pack payload
+        token.payload = any
+        token.to_h.reject { |_, v| v.nil? }
+      end
+
+      def payload_class
+        self.class.payload_class(options)
+      end
 
       def self.payload_class(opts)
         @cache ||= {}

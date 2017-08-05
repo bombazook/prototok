@@ -35,21 +35,6 @@ RSpec.describe Prototok do
           expect{token}.not_to raise_error
         end
 
-        context 'first argument is encoder instance' do
-          let!(:encoder_class) { described_class.send(:encoder, options[:encoder]) }
-          let!(:payload) { encoder_class.new }
-
-          it 'doesnt create a new encoder instance' do
-            expect(encoder_class).to_not receive(:new)
-            described_class.encode(*encode_args, **options)
-          end
-
-          it 'doesnt call .encoder' do
-            expect(described_class).to_not receive(:encoder)
-            described_class.encode(*encode_args, **options)
-          end
-        end
-
         it "returns a digit-letter string with delimiter" do
           encoded_result = described_class.encode(*encode_args, **options)
           base_64_regexp = /^[\d\w]+$/
@@ -70,8 +55,8 @@ RSpec.describe Prototok do
           expect{described_class.decode *decode_args, **options}.not_to raise_error
         end
 
-        it 'returns an encoder instance' do
-          expect(described_class.decode *decode_args, **options).to be_kind_of(Prototok::Encoders::Base)
+        it 'returns a Token instance' do
+          expect(described_class.decode *decode_args, **options).to be_kind_of(Prototok::Token)
         end
 
         it 'raises RbNaCl errors on using spoiled keys' do
@@ -155,14 +140,6 @@ RSpec.describe Prototok do
   describe '.cipher' do
     it 'raises ArgumentError if no cipher with such name found' do
       expect { described_class.send :cipher, op: 'olol' }.to raise_error(ArgumentError)
-    end
-  end
-
-  describe '.encoder' do
-    let(:encoder) { :msgpack }
-
-    it 'raises ArgumentError if no encoder with such name found' do
-      expect { described_class.send :encoder, 'olol' }.to raise_error(ArgumentError)
     end
   end
 

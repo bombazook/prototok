@@ -5,7 +5,9 @@ module Prototok
     op: :encrypted_mac,
     encoder: :json,
     token_delimiter: '.',
-    encoder_options: {}
+    encoder_options: {
+      encoding_mode: :token
+    }
   }.freeze
 
   class << self

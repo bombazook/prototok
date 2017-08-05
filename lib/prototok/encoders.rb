@@ -1,21 +1,10 @@
 module Prototok
   module Encoders
-    CLAIM_ALIASES = {
-      exp: %i[expires_at use_before],
-      nbf: %i[not_before use_after],
-      iat: [:created_at],
-      jti: %i[token_id id],
-      payload: []
-    }.freeze
-
-    KEY_OPTIONS = CLAIM_ALIASES.zip.flatten
-    raise SyntaxError if KEY_OPTIONS.uniq.size != KEY_OPTIONS.size
-
     Autoloaded.class {}
     extend Utils::Listed
 
-    class Base < ::Struct.new(*CLAIM_ALIASES.keys)
-      extend Utils::LateAlias
+    class Base
+      TIME_ENCODED_OPTIONS = [:exp, :nbf, :iat]
 
       def options
         @options ||= self.class.options.dup
@@ -25,16 +14,28 @@ module Prototok
         @options ||= Prototok.config[:encoder_options].dup
       end
 
-      def initialize(payload = nil, header: nil, encoder_options: nil, **_)
-        options.merge!(encoder_options) unless encoder_options.nil?
-        self[:payload] = payload
-        header.each { |k, v| send "#{k}=", v } unless header.nil?
+      def initialize(**encoder_options)
+        options.merge!(encoder_options)
       end
 
-      CLAIM_ALIASES.flat_map do |original, aliases|
-        aliases.each do |alias_name|
-          late_accessor_alias alias_name, original
+      def encode payload, **header
+        if options[:encoding_mode].to_s == 'token'
+          encode_token payload, **header
+        else
+          encode_payload payload
         end
+      end
+
+      def decode str
+        if options[:encoding_mode].to_s == 'token'
+          decode_token str
+        else
+          decode_payload str
+        end
+      end
+
+      def build_token payload, **header
+        Token.new(header.merge(:payload => payload))
       end
     end
   end

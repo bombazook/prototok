@@ -1,5 +1,5 @@
 syntax = "proto3";
-package prototok;
+package prototok.protobuf;
 
 message Payload {
   string query = 1;

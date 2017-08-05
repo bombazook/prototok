@@ -4,6 +4,7 @@ require 'prototok/version'
 require 'prototok/errors'
 require 'prototok/utils'
 require 'prototok/config'
+require 'prototok/token'
 require 'prototok/encoders'
 require 'prototok/ciphers'
 require 'prototok/formatters'
@@ -11,10 +12,8 @@ require 'prototok/formatters'
 module Prototok
   class << self
     def encode(payload, *cipher_args, **opts)
-      unless payload.kind_of?(Prototok::Encoders::Base)
-        payload = encoder(opts[:encoder]).new(payload, **opts)
-      end
-      encoded = payload.encode
+      header = opts[:header] || {}
+      encoded = encoder_instance(**opts).encode(payload, **header)
       processed = cipher(**opts).new(*cipher_args).encode(encoded)
       formatter(opts[:formatter]).new.encode(*processed)
     end
@@ -22,7 +21,7 @@ module Prototok
     def decode(encoded, *cipher_args, **opts)
       unformatted = formatter(opts[:formatter]).new.decode(encoded)
       unprocessed = cipher(**opts).new(*cipher_args).decode(*unformatted)
-      encoder(opts[:encoder]).decode(unprocessed, **opts)
+      encoder_instance(**opts).decode(unprocessed)
     end
 
     def key(*args, **opts)
@@ -35,14 +34,16 @@ module Prototok
       raise(error_class, Errors::MESSAGES[message_name])
     end
 
-    def encoder(encoder_name = nil)
-      encoder_name ||= config[:encoder]
-      Prototok::Encoders.find(encoder_name) || err(ArgumentError, :encoder)
+    def encoder_instance(encoder: nil, encoder_options: nil, **_)
+      encoder ||= config[:encoder]
+      klass = Prototok::Encoders.find(encoder) || err(ArgumentError, :encoder)
+      encoder_options ||= {}
+      klass.new(**encoder_options)
     end
 
-    def cipher(**opts)
-      op = opts[:op] || config[:op]
-      version = opts[:version] || config[:version]
+    def cipher(op: nil, version: nil, **_)
+      op ||= config[:op]
+      version ||= config[:version]
       ver_name = "V#{version}"
       Prototok::Ciphers.find(ver_name, op) || err(ArgumentError, :cipher)
     end

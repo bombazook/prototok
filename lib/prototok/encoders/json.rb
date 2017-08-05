@@ -3,14 +3,20 @@ require 'multi_json'
 module Prototok
   module Encoders
     class Json < Base
-      def encode
-        MultiJson.encode to_h
+      def encode_token payload, **header
+        MultiJson.encode build_token(payload, **header).to_h
       end
 
-      def self.decode(blob, **_)
-        obj = new
-        MultiJson.decode(blob).each { |k, v| obj[k] = v }
-        obj
+      def decode_token str
+        Token.new(MultiJson.decode(str))
+      end
+
+      def encode_payload payload
+         MessagePack.pack payload.to_h
+      end
+
+      def decode_payload str
+        MultiJson.decode(str)
       end
     end
   end

@@ -1,6 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/any.proto";
-package prototok;
+package prototok.protobuf;
 
 message Token {
   uint32 exp = 1;
