@@ -12,7 +12,7 @@ module Prototok
       end
 
       def encode_payload payload
-         MessagePack.pack payload.to_h
+         MultiJson.encode payload.to_h
       end
 
       def decode_payload str

@@ -37,14 +37,13 @@ RSpec.describe Prototok do
 
         it "returns a digit-letter string with delimiter" do
           encoded_result = described_class.encode(*encode_args, **options)
-          base_64_regexp = /^[\d\w]+$/
+          token_part_regexp = /^[\d\w]+$/
           splitted_result = encoded_result.split(Prototok.config[:token_delimiter])
-          expect(splitted_result).to all(match(base_64_regexp))
+          expect(splitted_result).to all(match(token_part_regexp))
         end
 
         it "returns a string of 2 parts with delimiter" do
           encoded_result = described_class.encode(*encode_args, **options)
-          base_64_regexp = /^[\d\w]+$/
           splitted_result = encoded_result.split(Prototok.config[:token_delimiter])
           expect(splitted_result.size).to be_eql 2
         end
@@ -55,8 +54,10 @@ RSpec.describe Prototok do
           expect{described_class.decode *decode_args, **options}.not_to raise_error
         end
 
-        it 'returns a Token instance' do
-          expect(described_class.decode *decode_args, **options).to be_kind_of(Prototok::Token)
+        if options.dig(:encoder_options, :encoding_mode).to_s != 'payload'
+          it 'returns a Token instance' do
+            expect(described_class.decode *decode_args, **options).to be_kind_of(Prototok::Token)
+          end
         end
 
         it 'raises RbNaCl errors on using spoiled keys' do
@@ -67,15 +68,26 @@ RSpec.describe Prototok do
 
         it 'allows to access original value attributes from payload (using string based notation)' do
           result = described_class.decode *decode_args, **options
-          expect(result.payload['query']).to be_eql(payload[:query])
+          if options.dig(:encoder_options, :encoding_mode).to_s != 'payload'
+            expect(result.payload['query']).to be_eql(payload[:query])
+          else
+            expect(result['query']).to be_eql(payload[:query])
+          end
         end
 
         context 'with header attributes token generation' do
           let(:options_with_header){ options.merge(header: {created_at: Time.now.to_i} )  }
           let(:token){ described_class.encode(*encode_args, **options_with_header) }
-          it 'allows to access header attributes' do
-            result = described_class.decode *decode_args, **options
-            expect(result.created_at).to be_eql(options_with_header[:header][:created_at])
+          if options.dig(:encoder_options, :encoding_mode).to_s != 'payload'
+            it 'allows to access header attributes' do
+              result = described_class.decode *decode_args, **options
+              expect(result.created_at).to be_eql(options_with_header[:header][:created_at])
+            end
+          else
+            it 'just ignores header' do
+              result = described_class.decode *decode_args, **options
+              expect(result.to_h.keys).to_not include(:created_at, 'created_at')
+            end
           end
         end
 

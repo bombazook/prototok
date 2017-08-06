@@ -19,17 +19,19 @@ module Prototok
       end
 
       def encode payload, **header
-        if options[:encoding_mode].to_s == 'token'
+        case options[:encoding_mode].to_s
+        when 'token'
           encode_token payload, **header
-        else
+        when 'payload'
           encode_payload payload
         end
       end
 
       def decode str
-        if options[:encoding_mode].to_s == 'token'
+        case options[:encoding_mode].to_s
+        when 'token'
           decode_token str
-        else
+        when 'payload'
           decode_payload str
         end
       end

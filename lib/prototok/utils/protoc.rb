@@ -16,7 +16,7 @@ module Prototok
           end
           input = File.read(path)
           digest = Digest::SHA256.hexdigest(input)
-          if cache.include? digest # not threadsafe!
+          if cache.include? digest
             false
           else
             temp = ::Tempfile.new digest
