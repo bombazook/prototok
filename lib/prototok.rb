@@ -11,14 +11,16 @@ require 'prototok/formatters'
 
 module Prototok
   class << self
-    def encode(payload, *cipher_args, **opts)
+    def encode(payload=nil, *cipher_args, **opts)
+      raise ArgumentError if payload.nil?
       header = opts[:header] || {}
       encoded = encoder_instance(**opts).encode(payload, **header)
       processed = cipher(**opts).new(*cipher_args).encode(encoded)
       formatter(opts[:formatter]).new.encode(*processed)
     end
 
-    def decode(encoded, *cipher_args, **opts)
+    def decode(encoded=nil, *cipher_args, **opts)
+      raise ArgumentError if encoded.nil?
       unformatted = formatter(opts[:formatter]).new.decode(encoded)
       unprocessed = cipher(**opts).new(*cipher_args).decode(*unformatted)
       encoder_instance(**opts).decode(unprocessed)
@@ -28,11 +30,9 @@ module Prototok
       cipher(**opts).key(*args)
     end
 
-    private
+    include Errors
 
-    def err(error_class, message_name)
-      raise(error_class, Errors::MESSAGES[message_name])
-    end
+    private
 
     def encoder_instance(encoder: nil, encoder_options: nil, **_)
       encoder ||= config[:encoder]

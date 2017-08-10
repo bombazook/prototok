@@ -19,7 +19,7 @@ module Prototok
 
       def decode_token str
         decoded_token = Prototok::Protobuf::Token.decode(str)
-        token = Token.new(decoded_token.to_h)
+        token = Token.build(decoded_token.to_h)
         token.payload = decoded_token.payload.unpack(payload_class)
         token
       end
@@ -44,7 +44,7 @@ module Prototok
         any = Google::Protobuf::Any.new
         any.pack payload
         token.payload = any
-        token.to_h.reject { |_, v| v.nil? }
+        token.prepare
       end
 
       def payload_class

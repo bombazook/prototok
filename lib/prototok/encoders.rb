@@ -37,7 +37,11 @@ module Prototok
       end
 
       def build_token payload, **header
-        Token.new(header.merge(:payload => payload))
+        if payload.is_a? Token
+          payload.dup.update!(header)
+        else
+          Token.new(header.merge(:payload => payload))
+        end
       end
     end
   end

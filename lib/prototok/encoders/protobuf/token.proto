@@ -3,9 +3,9 @@ import "google/protobuf/any.proto";
 package prototok.protobuf;
 
 message Token {
-  uint32 exp = 1;
-  uint32 nbf = 2;
-  uint32 iat = 3;
+  string exp = 1;
+  string nbf = 2;
+  string iat = 3;
   string jti = 4;
   google.protobuf.Any payload = 5;
 }

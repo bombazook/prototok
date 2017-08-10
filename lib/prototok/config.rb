@@ -7,7 +7,8 @@ module Prototok
     token_delimiter: '.',
     encoder_options: {
       encoding_mode: :token
-    }
+    },
+    time_encoding_precision: 10
   }.freeze
 
   class << self
