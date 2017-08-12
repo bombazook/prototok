@@ -18,7 +18,7 @@ module Prototok
           options[:encoder_options] ||= {}
           payload_proto_path = File.join(
             Prototok::Utils::Paths.gem_root,
-            'spec/encoders/protobuf/test_payload.prot'
+            'spec/prototok/encoders/protobuf/test_payload.prot'
           )
           options[:encoder_options][:payload_file] = payload_proto_path
         end

@@ -1,10 +1,10 @@
-require "bundler/setup"
-require "prototok"
+require 'bundler/setup'
+require 'prototok'
 require 'byebug'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = ".rspec_status"
+  config.example_status_persistence_file_path = '.rspec_status'
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
@@ -18,5 +18,4 @@ RSpec.configure do |config|
     mocks.verify_doubled_constant_names = true
     mocks.verify_partial_doubles = true
   end
-
 end
