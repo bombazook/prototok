@@ -4,11 +4,11 @@ module Prototok
   module Encoders
     class Msgpack < Base
       def encode_token payload, **header
-        MessagePack.pack build_token(payload, **header).prepare
+        MessagePack.pack build_token(payload, **header).encode
       end
 
       def decode_token str
-        Token.build(MessagePack.unpack(str))
+        Token.decode(MessagePack.unpack(str))
       end
 
       def encode_payload payload

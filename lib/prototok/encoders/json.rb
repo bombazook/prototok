@@ -4,11 +4,11 @@ module Prototok
   module Encoders
     class Json < Base
       def encode_token payload, **header
-        MultiJson.encode build_token(payload, **header).prepare
+        MultiJson.encode build_token(payload, **header).encode
       end
 
       def decode_token str
-        Token.build(MultiJson.decode(str))
+        Token.decode(MultiJson.decode(str))
       end
 
       def encode_payload payload
