@@ -9,17 +9,9 @@ module Prototok
     [:payload, []]
   ].freeze
 
-  KEY_OPTIONS = CLAIM_ALIASES.flatten
-  TIME_KEYS = [:exp, :nbf, :iat]
-  raise SyntaxError if KEY_OPTIONS.uniq.size != KEY_OPTIONS.size
-
   class Token < Struct.new(*CLAIM_ALIASES.map(&:first))
     extend Utils::TypeAttributes
-    type ::Time, *TIME_KEYS
-
-    extend Serializers
-    serializer :time, *TIME_KEYS, nil: :delete, empty: :delete
-    serializer nil, :jti, :payload, nil: :delete
+    type ::Time, :exp, :nbf, :iat
 
     def initialize opts={}
       super()

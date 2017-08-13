@@ -2,9 +2,9 @@ require 'time'
 
 module Prototok
   module Serializers
-    module Time
-      def self.encode value
-        value.iso8601(Prototok.config[:time_encoding_precision])
+    class Time < Base
+      def encode
+        @object && @object.iso8601(Prototok.config[:time_encoding_precision])
       end
 
       def self.decode value

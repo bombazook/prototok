@@ -36,12 +36,17 @@ module Prototok
         end
       end
 
-      def build_token payload, **header
+      def serialize payload=nil, **header
         if payload.is_a? Token
-          payload.dup.update!(header)
+          token = payload.dup.update!(header)
         else
-          Token.new(header.merge(:payload => payload))
+          token = Token.new.update!(header.merge(:payload => payload))
         end
+         Serializers.find(:token).new(token).encode
+      end
+
+      def deserialize data
+        Token.new(Serializers.find(:token).decode (data))
       end
     end
   end

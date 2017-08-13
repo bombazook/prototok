@@ -12,15 +12,16 @@ module Prototok
       }.freeze
 
       def encode_token payload, **header
-        token = build_token(payload, **header)
-        protobuf_token = Prototok::Protobuf::Token.new(prepare_token(token))
-        protobuf_token.class.encode(protobuf_token)
+        serialized = serialize(payload, **header)
+        prepared_token = prepare_token(serialized)
+        prepared_token.class.encode(prepared_token)
       end
 
       def decode_token str
         decoded_token = Prototok::Protobuf::Token.decode(str)
-        token = Token.decode(decoded_token)
-        token.payload = decoded_token.payload.unpack(payload_class)
+        payload = decoded_token.payload.unpack(payload_class)
+        token = deserialize(decoded_token.to_h)
+        token.payload = payload
         token
       end
 
@@ -39,12 +40,12 @@ module Prototok
 
       private
 
-      def prepare_token token
-        payload = payload_class.new(token.payload || {})
+      def prepare_token serialized_token
+        payload = payload_class.new(serialized_token[:payload] || {})
         any = Google::Protobuf::Any.new
         any.pack payload
-        token.payload = any
-        token.encode
+        serialized_token[:payload] = any
+        Prototok::Protobuf::Token.new(serialized_token)
       end
 
       def payload_class
