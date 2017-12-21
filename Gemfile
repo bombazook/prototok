@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem 'google-protobuf', '~> 3.3.0'
+gem 'google-protobuf'
 gem 'grpc-tools'
 gem 'msgpack'
 gem 'oj'

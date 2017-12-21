@@ -4,9 +4,6 @@ require 'google/protobuf/well_known_types'
 module Prototok
   module Encoders
     class Protobuf < Base
-      base_token = File.join(__dir__, 'protobuf/token.proto')
-      Prototok::Utils::Protoc.process(base_token)
-
       PROTOBUF_DEFAULTS = {
         payload_class: '::Prototok::Protobuf::Payload'
       }.freeze
@@ -70,6 +67,9 @@ module Prototok
       rescue NameError
         nil
       end
+
+      base_token = File.join(__dir__, 'protobuf/token.proto')
+      Prototok::Utils::Protoc.process(base_token)
     end
   end
 end

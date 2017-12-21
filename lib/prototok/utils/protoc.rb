@@ -31,13 +31,11 @@ module Prototok
         def load_proto(proto, digest)
           dirname = File.dirname(proto.path)
           output_rb = proto.path + '_pb.rb'
-          begin
-            `protoc #{proto.path} --ruby_out=#{dirname} --proto_path=#{dirname}`
-            load output_rb
-          ensure
-            cache.add digest
-            FileUtils.rm output_rb
-          end
+          command = "protoc #{proto.path} --ruby_out=#{dirname} --proto_path=#{dirname}"
+          success = system(protoc_command)
+          Prototok.err(Errors::ExternalError, :external_command, 'protoc', command) unless success
+          load output_rb
+          cache.add digest
         end
       end
     end
