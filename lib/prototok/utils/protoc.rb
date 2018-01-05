@@ -31,9 +31,9 @@ module Prototok
         def load_proto(proto, digest)
           dirname = File.dirname(proto.path)
           output_rb = proto.path + '_pb.rb'
-          command = "protoc #{proto.path} --ruby_out=#{dirname} --proto_path=#{dirname}"
+          protoc_command = "protoc #{proto.path} --ruby_out=#{dirname} --proto_path=#{dirname}"
           success = system(protoc_command)
-          Prototok.err(Errors::ExternalError, :external_command, 'protoc', command) unless success
+          Prototok.err(Errors::ExternalError, :external_command, 'protoc', protoc_command) unless success
           load output_rb
           cache.add digest
         end
