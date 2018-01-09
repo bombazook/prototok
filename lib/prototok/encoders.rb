@@ -4,8 +4,6 @@ module Prototok
     extend Utils::Listed
 
     class Base
-      TIME_ENCODED_OPTIONS = [:exp, :nbf, :iat]
-
       def options
         @options ||= self.class.options.dup
       end
