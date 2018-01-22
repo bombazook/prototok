@@ -1,4 +1,3 @@
-require 'autoloaded'
 require 'rbnacl'
 require 'prototok/version'
 require 'prototok/errors'
