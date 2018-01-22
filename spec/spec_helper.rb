@@ -1,4 +1,5 @@
 require 'bundler/setup'
+require 'rbnacl/libsodium'
 require 'prototok'
 require 'byebug'
 
