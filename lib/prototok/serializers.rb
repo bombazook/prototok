@@ -1,6 +1,7 @@
 module Prototok
   module Serializers
-    Autoloaded.class {}
+    autoload :Token, 'prototok/serializers/token'
+    autoload :Time, 'prototok/serializers/time'
     extend Utils::Listed
 
     class Base

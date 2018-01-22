@@ -1,7 +1,8 @@
 module Prototok
   module Ciphers
-    Autoloaded.class {}
+    autoload :V1, 'prototok/ciphers/v1'
     extend Utils::Listed
+
     class Base
       class << self
         attr_writer :cipher_class

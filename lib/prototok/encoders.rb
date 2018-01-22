@@ -1,6 +1,8 @@
 module Prototok
   module Encoders
-    Autoloaded.class {}
+    autoload :Json, 'prototok/encoders/json'
+    autoload :Msgpack, 'prototok/encoders/msgpack'
+    autoload :Protobuf, 'prototok/encoders/protobuf'
     extend Utils::Listed
 
     class Base
