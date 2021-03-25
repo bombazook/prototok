@@ -39,7 +39,7 @@ module Prototok
       class << self
         def attribute(*names, **options)
           names.uniq!
-          update_key_ops(*names, options)
+          update_key_ops(*names, **options)
           names.each do |name|
             attribute_storage[name] = Attribute.new(options)
             define_attribute_method name
