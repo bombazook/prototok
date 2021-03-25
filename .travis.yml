@@ -4,7 +4,7 @@ rvm:
   - 2.6
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libsodium
+  - sudo apt-get install -y libsodium18
   - gem install bundler
   - export PATH=$PATH:$HOME/protoc/bin
 script: bundle exec rspec spec
