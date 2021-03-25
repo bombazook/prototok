@@ -1,7 +1,5 @@
 source "https://rubygems.org"
 
-gem 'google-protobuf'
-gem 'grpc-tools'
 gem 'msgpack'
 gem 'oj'
 gem 'pry'
